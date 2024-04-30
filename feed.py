@@ -5,6 +5,7 @@ import argparse
 import json
 import requests
 import sys
+import re
 
 xmlTemplate = "review_feed_template.xml"
 xmlHeader = "review_feed_header.xml"
@@ -54,6 +55,7 @@ def parseArgs():
         "pubFav": pubFav,
     }
 
+
 def getReviews(baseUrl, apiKey, queryId, reviewId):
     endPoint = f"{baseUrl}/api/queries/{queryId}/results"
     httpHeaders = {
@@ -76,10 +78,12 @@ def getReviews(baseUrl, apiKey, queryId, reviewId):
 
     return jsonResult["query_result"]["data"]["rows"]
 
+
 def getReviewTemplate():
     with open(xmlTemplate, "r") as file:
         template = file.read()
     return template
+
 
 def buildReviews(rowReviews):
     template = getReviewTemplate()
@@ -94,21 +98,35 @@ def buildReviews(rowReviews):
 
     return reviewXml
 
+
+def makeXmlTag(tagName, value):
+    return f"<{tagName}>{value}</{tagName}>"
+
+
 def buildFeedHeader(pubName, pubFav):
     with open(xmlHeader, "r") as file:
         header = file.read()
 
-    header.replace("__PUBLISHER_NAME__", pubName)
+    header = header.replace("__PUBLISHER_NAME__", makeXmlTag("name", pubName))
     if pubFav is not None:
-        header.replace("__PUBLISHER_FAVICON__", pubFav)
+        header = header.replace("__PUBLISHER_FAVICON__", makeXmlTag("favicon", pubFav))
+    else:
+        header = header.replace("__PUBLISHER_FAVICON__", "")
 
     return header
+
 
 def getFeedFooter():
     with open(xmlFooter, "r") as file:
         footer = file.read()
 
     return footer
+
+
+def concatReviewXmls(*args):
+    concatXmls = "".join(args)
+    return re.sub(r"^\s*$\n?", "", concatXmls, flags=re.MULTILINE)
+
 
 def main():
     args = parseArgs()
@@ -118,9 +136,9 @@ def main():
     )
 
     reviewXml = buildReviews(rowReviews)
-    headerXml = buildFeedHeader(args['pubName'], args['pubFav'])
+    headerXml = buildFeedHeader(args["pubName"], args["pubFav"])
     footerXml = getFeedFooter()
-    builtXml = headerXml + reviewXml + footerXml
+    builtXml = concatReviewXmls(headerXml, reviewXml, footerXml)
 
     if args["xmlFilename"] is not None:
         with open(args["xmlFilename"], "w") as file:

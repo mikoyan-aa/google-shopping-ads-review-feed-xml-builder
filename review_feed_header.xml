@@ -5,7 +5,7 @@
  "http://www.google.com/shopping/reviews/schema/product/2.3/product_reviews.xsd">
     <version>2.3</version>
     <publisher>
-        <name>__PUBLISHER_NAME__</name>
-        <favicon>__PUBLISHER_FAVICON__</favicon>
+        __PUBLISHER_NAME__
+        __PUBLISHER_FAVICON__
     </publisher>
     <reviews>
