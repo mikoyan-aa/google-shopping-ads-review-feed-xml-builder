@@ -76,17 +76,13 @@ def getReviews(baseUrl, apiKey, queryId, reviewId):
 
     return jsonResult["query_result"]["data"]["rows"]
 
-
-def main():
-    args = parseArgs()
-
-    reviews = getReviews(
-        args["baseUrl"], args["apiKey"], args["queryId"], args["reviewId"]
-    )
-
-    # <review>タグ内の置換
+def getReviewTemplate():
     with open(xmlTemplate, "r") as file:
         template = file.read()
+    return template
+
+def buildReviews(reviews):
+    template = getReviewTemplate()
 
     feedXml = ""
     for review in reviews:
@@ -96,18 +92,36 @@ def main():
             chunk = chunk.replace(placeHolder, str(value))
         feedXml = feedXml + chunk
 
-    # ヘッダの<publisher>関連の置換
+    return feedXml
+
+def buildFeedHeader(pubName, pubFav):
     with open(xmlHeader, "r") as file:
         header = file.read()
 
-    header.replace("__PUBLISHER_NAME__", args["pubName"])
-    if args["pubFav"] is not None:
-        header.replace("__PUBLISHER_FAVICON__", args["pubFav"])
+    header.replace("__PUBLISHER_NAME__", pubName)
+    if pubFav is not None:
+        header.replace("__PUBLISHER_FAVICON__", pubFav)
 
+    return header
+
+def getFeedFooter():
     with open(xmlFooter, "r") as file:
         footer = file.read()
 
-    builtXml = header + feedXml + footer
+    return footer
+
+def main():
+    args = parseArgs()
+
+    reviews = getReviews(
+        args["baseUrl"], args["apiKey"], args["queryId"], args["reviewId"]
+    )
+
+    reviewXml = buildReviews(reviews)
+    headerXml = buildFeedHeader(args['pubName'], args['pubFav'])
+    footerXml = getFeedFooter()
+    builtXml = headerXml + reviewXml + footerXml
+
     if args["xmlFilename"] is not None:
         with open(args["xmlFilename"], "w") as file:
             file.write(builtXml)
