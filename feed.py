@@ -6,8 +6,6 @@ import json
 import requests
 import sys
 
-defaultUrl = "http://foo.bar"
-apiPath = "/api/result.json?api_key"
 xmlTemplate = "review_feed_template.xml"
 xmlHeader = "review_feed_header.xml"
 xmlFooter = "review_feed_footer.xml"
@@ -19,16 +17,12 @@ def parseArgs():
     )
 
     parser.add_argument("-k", "--api-key", type=str, required=True, help="RedashのAPIキー")
-    parser.add_argument(
-        "-u", "--url", type=str, required=False, default=defaultUrl, help="RedashのURL"
-    )
+    parser.add_argument("-u", "--url", type=str, required=True, help="RedashのURL")
     parser.add_argument(
         "-q", "--query-id", type=int, required=True, help="RedashのクエリID"
     )
     parser.add_argument("-r", "--review-id", type=int, required=True, help="レビューID")
-    parser.add_argument(
-        "-o", "--output", type=str, help="出力XMLファイル名"
-    )
+    parser.add_argument("-o", "--output", type=str, help="出力XMLファイル名")
     parser.add_argument(
         "-n", "--publisher-name", type=str, required=True, help="パブリッシャー名"
     )
@@ -60,29 +54,35 @@ def parseArgs():
         "pubFav": pubFav,
     }
 
-
-def main():
-    args = parseArgs()
-
-    endPoint = f"{args['baseUrl']}/api/queries/{args['queryId']}/results"
+def getReviews(baseUrl, apiKey, queryId, reviewId):
+    endPoint = f"{baseUrl}/api/queries/{queryId}/results"
     httpHeaders = {
-        "Authorization": f"{args['apiKey']}",
+        "Authorization": f"{apiKey}",
         "Content-Type": "application/json",
     }
     postData = {
         "parameters": {
-            "review_id": f"{args['reviewId']}",
+            "review_id": f"{reviewId}",
         }
     }
     postJson = json.dumps(postData)
 
     response = requests.post(endPoint, headers=httpHeaders, data=postJson)
     if response.status_code != 200:
-        print(f"Error: {response.status_code} is sent from {args['endPoint']}")
+        print(f"Error: {response.status_code} is sent from {endPoint}")
         sys.exit(1)
 
     jsonResult = response.json()
-    reviews = jsonResult["query_result"]["data"]["rows"]
+
+    return jsonResult["query_result"]["data"]["rows"]
+
+
+def main():
+    args = parseArgs()
+
+    reviews = getReviews(
+        args["baseUrl"], args["apiKey"], args["queryId"], args["reviewId"]
+    )
 
     # <review>タグ内の置換
     with open(xmlTemplate, "r") as file:
@@ -108,8 +108,8 @@ def main():
         footer = file.read()
 
     builtXml = header + feedXml + footer
-    if args['xmlFilename'] is not None:
-        with open(args['xmlFilename'], "w") as file:
+    if args["xmlFilename"] is not None:
+        with open(args["xmlFilename"], "w") as file:
             file.write(builtXml)
     else:
         print(builtXml)
