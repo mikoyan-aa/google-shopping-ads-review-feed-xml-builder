@@ -81,18 +81,18 @@ def getReviewTemplate():
         template = file.read()
     return template
 
-def buildReviews(reviews):
+def buildReviews(rowReviews):
     template = getReviewTemplate()
 
-    feedXml = ""
-    for review in reviews:
+    reviewXml = ""
+    for review in rowReviews:
         chunk = template
         for key, value in review.items():
             placeHolder = "__" + key.upper() + "__"
             chunk = chunk.replace(placeHolder, str(value))
-        feedXml = feedXml + chunk
+        reviewXml = reviewXml + chunk
 
-    return feedXml
+    return reviewXml
 
 def buildFeedHeader(pubName, pubFav):
     with open(xmlHeader, "r") as file:
@@ -113,11 +113,11 @@ def getFeedFooter():
 def main():
     args = parseArgs()
 
-    reviews = getReviews(
+    rowReviews = getReviews(
         args["baseUrl"], args["apiKey"], args["queryId"], args["reviewId"]
     )
 
-    reviewXml = buildReviews(reviews)
+    reviewXml = buildReviews(rowReviews)
     headerXml = buildFeedHeader(args['pubName'], args['pubFav'])
     footerXml = getFeedFooter()
     builtXml = headerXml + reviewXml + footerXml
