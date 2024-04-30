@@ -21,13 +21,19 @@ options:
   -u URL, --url URL     RedashのURL
   -q QUERY_ID, --query-id QUERY_ID
                         RedashのクエリID
+  -r REVIEW_ID, --review-id REVIEW_ID
+                        レビューID
   -o OUTPUT, --output OUTPUT
                         出力XMLファイル名
+  -n PUBLISHER_NAME, --publisher-name PUBLISHER_NAME
+                        パブリッシャー名
+  -f PUBLISHER_FAVICON, --publisher-favicon PUBLISHER_FAVICON
+                        パブリッシャー favicon URL
 ```
 
 ## How to run
 ```shell
-./feed.py --query-id <RedashのクエリID> --api-key "<RedashのAPIキー>" -u "RedashのURL" > <出力ファイル名.xml>
+./feed.py --query-id <RedashのクエリID> --api-key "<RedashのAPIキー>" -u "RedashのURL" --review-id <対象のレビューID> --publisher-name <パブリッシャー名> --output <出力ファイル名>
 ```
 
 ## How to validate for created review feed XML file
