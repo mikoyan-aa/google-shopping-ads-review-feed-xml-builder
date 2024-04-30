@@ -1,0 +1,23 @@
+        <review>
+            <reviewer>
+                <name>__REVIEWER_NAME__</name>
+            </reviewer>
+            <review_timestamp>__REVIEW_TIMESTAMP__</review_timestamp>
+            <title>__REVIEW_TITLE__</title>
+            <content>__REVIEW_CONTENT__</content>
+            <review_url type="singleton">__REVIEW_URL__</review_url>
+            <ratings>
+                <overall min="1" max="5">__REVIEW_RATING__</overall>
+            </ratings>
+            <products>
+                <product>
+                    <product_ids>
+                        <gtins>
+                            <gtin>__GTIN__</gtin>
+                        </gtins>
+                    </product_ids>
+                    <product_name>__PRODUCT_NAME__</product_name>
+                    <product_url>__PRODUCT_URL__</product_url>
+                </product>
+            </products>
+        </review>
