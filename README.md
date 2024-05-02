@@ -10,7 +10,7 @@
 ## Help
 ```shell
 ./feed.py --help
-usage: feed.py [-h] -k API_KEY [-u URL] -q QUERY_ID [-o OUTPUT]
+usage: feed.py [-h] -k API_KEY -u URL -q QUERY_ID -r REVIEW_ID [-o OUTPUT] -n PUBLISHER_NAME [-f PUBLISHER_FAVICON]
 
 Feed CSV via Redash API and emit XML file with a template
 
