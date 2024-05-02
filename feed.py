@@ -6,6 +6,7 @@ import json
 import requests
 import sys
 import re
+from lxml import etree
 
 xmlTemplate = "review_feed_template.xml"
 xmlHeader = "review_feed_header.xml"
@@ -85,6 +86,12 @@ def getReviewTemplate():
     return template
 
 
+def removeLine(key, chunk):
+    lowerCaseKey = key.lower()
+    if lowerCaseKey == "gtin":
+        return re.sub(r"<gtins>\s*<gtin>__GTIN__<\/gtin>\s*<\/gtins>", "", chunk, flags=re.MULTILINE)
+    return re.sub(rf"^\s*<{lowerCaseKey}..*<\/{lowerCaseKey}>", "", chunk, flags=re.MULTILINE)
+
 def buildReviews(rowReviews):
     template = getReviewTemplate()
 
@@ -93,25 +100,24 @@ def buildReviews(rowReviews):
         chunk = template
         for key, value in review.items():
             placeHolder = "__" + key.upper() + "__"
-            chunk = chunk.replace(placeHolder, str(value))
+            if value is not None:
+                chunk = chunk.replace(placeHolder, str(value))
+            else:
+                chunk = removeLine(key, chunk)
         reviewXml = reviewXml + chunk
 
     return reviewXml
-
-
-def makeXmlTag(tagName, value):
-    return f"<{tagName}>{value}</{tagName}>"
 
 
 def buildFeedHeader(pubName, pubFav):
     with open(xmlHeader, "r") as file:
         header = file.read()
 
-    header = header.replace("__PUBLISHER_NAME__", makeXmlTag("name", pubName))
+    header = header.replace("__PUBLISHER_NAME__", pubName)
     if pubFav is not None:
-        header = header.replace("__PUBLISHER_FAVICON__", makeXmlTag("favicon", pubFav))
+        header = header.replace("__PUBLISHER_FAVICON__", pubFav)
     else:
-        header = header.replace("__PUBLISHER_FAVICON__", "")
+        header = header.replace("<favicon>__PUBLISHER_FAVICON__</favicon>", "")
 
     return header
 
@@ -135,8 +141,8 @@ def main():
         args["baseUrl"], args["apiKey"], args["queryId"], args["reviewId"]
     )
 
-    reviewXml = buildReviews(rowReviews)
     headerXml = buildFeedHeader(args["pubName"], args["pubFav"])
+    reviewXml = buildReviews(rowReviews)
     footerXml = getFeedFooter()
     builtXml = concatReviewXmls(headerXml, reviewXml, footerXml)
 
