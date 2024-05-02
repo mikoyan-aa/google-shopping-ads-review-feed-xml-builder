@@ -15,6 +15,9 @@
                         <gtins>
                             <gtin>__GTIN__</gtin>
                         </gtins>
+                        <skus>
+                            <sku>__SKU__</sku>
+                        </skus>
                     </product_ids>
                     <product_name>__PRODUCT_NAME__</product_name>
                     <product_url>__PRODUCT_URL__</product_url>

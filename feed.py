@@ -87,10 +87,10 @@ def getReviewTemplate():
 
 
 def removeLine(key, chunk):
-    lowerCaseKey = key.lower()
-    if lowerCaseKey == "gtin":
-        return re.sub(r"<gtins>\s*<gtin>__GTIN__<\/gtin>\s*<\/gtins>", "", chunk, flags=re.MULTILINE)
-    return re.sub(rf"^\s*<{lowerCaseKey}..*<\/{lowerCaseKey}>", "", chunk, flags=re.MULTILINE)
+    upperCaseKey = key.upper()
+    if key in ["gtin", "sku"]:
+        return re.sub(rf"<{key}s>\s*<{key}>__{upperCaseKey}__<\/{key}>\s*<\/{key}s>", "", chunk, flags=re.MULTILINE)
+    return re.sub(rf"<{key}.*>\s*__{upperCaseKey}__\s*<\/{key}>", "", chunk, flags=re.MULTILINE)
 
 def buildReviews(rowReviews):
     template = getReviewTemplate()
