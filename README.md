@@ -39,7 +39,7 @@ options:
 ## How to validate for created review feed XML file
 - You need to install libxml2 open source library for using the `xmllint` command
 ```shell
-xmllint --schema http://www.google.com/shopping/reviews/schema/product/2.3/product_reviews.xsd --noout test.xml
+xmllint --schema http://www.google.com/shopping/reviews/schema/product/2.3/product_reviews.xsd --noout /path/to/test.xml
 ```
 
 ## Files
