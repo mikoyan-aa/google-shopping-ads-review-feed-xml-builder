@@ -23,6 +23,8 @@ options:
                         RedashのクエリID
   -r REVIEW_ID, --review-id REVIEW_ID
                         レビューID
+  -v REVIEW_VIEW_ID, --review-view-id REVIEW_VIEW_ID
+                        レビュービューID
   -o OUTPUT, --output OUTPUT
                         出力XMLファイル名
   -n PUBLISHER_NAME, --publisher-name PUBLISHER_NAME
@@ -33,7 +35,7 @@ options:
 
 ## How to run
 ```shell
-./feed.py --query-id <RedashのクエリID> --api-key "<RedashのAPIキー>" -u "RedashのURL" --review-id <対象のレビューID> --publisher-name <パブリッシャー名> --output <出力ファイル名>
+./feed.py --query-id <RedashのクエリID> --api-key "<RedashのAPIキー>" -u "RedashのURL" --review-id <対象のレビューID> --review-view-id <対象のレビュービューID> --publisher-name <パブリッシャー名> --output <出力ファイル名>
 ```
 
 ## How to validate for created review feed XML file

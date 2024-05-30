@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from xml.sax.saxutils import escape
 import argparse
 import json
+import re
 import requests
 import sys
-import re
 
 xmlTemplate = "review_feed_template.xml"
 xmlHeader = "review_feed_header.xml"
@@ -104,7 +105,7 @@ def buildReviews(rowReviews):
         for key, value in review.items():
             placeHolder = "__" + key.upper() + "__"
             if value is not None:
-                chunk = chunk.replace(placeHolder, str(value))
+                chunk = chunk.replace(placeHolder, escape(str(value)))
             else:
                 chunk = removeLine(key, chunk)
         reviewXml = reviewXml + chunk
@@ -116,7 +117,7 @@ def buildFeedHeader(pubName, pubFav):
     with open(xmlHeader, "r") as file:
         header = file.read()
 
-    header = header.replace("__PUBLISHER_NAME__", pubName)
+    header = header.replace("__PUBLISHER_NAME__", escape(pubName))
     if pubFav is not None:
         header = header.replace("__PUBLISHER_FAVICON__", pubFav)
     else:
