@@ -6,7 +6,6 @@ import json
 import requests
 import sys
 import re
-from lxml import etree
 
 xmlTemplate = "review_feed_template.xml"
 xmlHeader = "review_feed_header.xml"
@@ -24,6 +23,7 @@ def parseArgs():
         "-q", "--query-id", type=int, required=True, help="RedashのクエリID"
     )
     parser.add_argument("-r", "--review-id", type=int, required=True, help="レビューID")
+    parser.add_argument("-v", "--review-view-id", type=int, required=True, help="レビュービューID")
     parser.add_argument("-o", "--output", type=str, help="出力XMLファイル名")
     parser.add_argument(
         "-n", "--publisher-name", type=str, required=True, help="パブリッシャー名"
@@ -42,6 +42,7 @@ def parseArgs():
     baseUrl = args.url.rstrip("/")
     queryId = args.query_id
     reviewId = args.review_id
+    reviewViewId = args.review_view_id
     xmlFilename = args.output
     pubName = args.publisher_name
     pubFav = args.publisher_favicon
@@ -51,13 +52,14 @@ def parseArgs():
         "baseUrl": baseUrl,
         "queryId": queryId,
         "reviewId": reviewId,
+        "reviewViewId": reviewViewId,
         "xmlFilename": xmlFilename,
         "pubName": pubName,
         "pubFav": pubFav,
     }
 
 
-def getReviews(baseUrl, apiKey, queryId, reviewId):
+def getReviews(baseUrl, apiKey, queryId, reviewId, reviewViewId):
     endPoint = f"{baseUrl}/api/queries/{queryId}/results"
     httpHeaders = {
         "Authorization": f"{apiKey}",
@@ -66,6 +68,7 @@ def getReviews(baseUrl, apiKey, queryId, reviewId):
     postData = {
         "parameters": {
             "review_id": f"{reviewId}",
+            "review_view_id": f"{reviewViewId}",
         }
     }
     postJson = json.dumps(postData)
@@ -138,7 +141,7 @@ def main():
     args = parseArgs()
 
     rowReviews = getReviews(
-        args["baseUrl"], args["apiKey"], args["queryId"], args["reviewId"]
+        args["baseUrl"], args["apiKey"], args["queryId"], args["reviewId"], args["reviewViewId"]
     )
 
     headerXml = buildFeedHeader(args["pubName"], args["pubFav"])
